@@ -2,7 +2,8 @@ name: Run Telegram Bot
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Otomatis restart setiap 5 jam sekali biar gak terpotong limit 6 jam GitHub
+    - cron: '0 */5 * * *'
   workflow_dispatch:
 
 jobs:
@@ -20,11 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install requests
+          # Tambahkan library lain di sini kalau bot kamu butuh (misal: pip install pyrogram telethon dsb)
 
-      - name: Run bot
-        env:
-          SESSION: ${{ secrets.SESSION }}
+      - name: Run Bot
         run: |
           python bot.py
