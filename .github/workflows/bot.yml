@@ -2,13 +2,16 @@ name: Run Telegram Bot
 
 on:
   schedule:
-    # Otomatis restart setiap 5 jam sekali biar gak terpotong limit 6 jam GitHub
     - cron: '0 */5 * * *'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # BAGIAN INI YANG KURANG (PENTING SUPAYA SESSION TERBACA)
+    env:
+      SESSION: ${{ secrets.SESSION }}
 
     steps:
       - name: Checkout repository
@@ -26,3 +29,4 @@ jobs:
       - name: Run Bot
         run: |
           python bot.py
+
