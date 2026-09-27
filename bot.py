@@ -9,8 +9,6 @@ string_session = os.environ.get('SESSION')
 # Pakai StringSession(string_session) supaya gak nanya input nomor HP lagi
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-#client = TelegramClient('sesi_userbot', api_id, api_hash)
-
 async def main():
     print("Userbot broadcast aktif...")
     while True:
