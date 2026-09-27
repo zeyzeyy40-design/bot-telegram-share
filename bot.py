@@ -13,9 +13,9 @@ if not string_session:
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-pesan_kirim = "DOWNLOAD MILKYPEDIA APLIKASI PPOB & QRIS TANPA KTP, GASS DOWNLOAD DIBIO🥶✅"
-jeda_antar_grup = 4      # Jeda singkat 4 detik antar grup biar aman dari spam/FloodWait
-jeda_siklus = 300        # Jeda 5 menit sebelum bot mulai siklus broadcast ulang dari awal
+pesan_kirim = "DOWNLOAD MILKYPEDIA, APK PPOB & QRIS TANPA KTP GRATISS🥳"
+jeda_antar_grup = 15     # Jeda 15 detik antar grup biar aman dari FloodWait JB
+jeda_siklus = 900        # Jeda 15 menit (900 detik) setelah selesai satu putaran penuh
 
 async def main():
     print("Userbot broadcast aktif...")
@@ -50,7 +50,7 @@ async def main():
                         count += 1
                         print(f"Berhasil kirim ke: {dialog.name}")
                         
-                        # Jeda singkat antar grup agar tidak gampang kena batasan
+                        # Jeda aman antar grup
                         await asyncio.sleep(jeda_antar_grup)
                         
                     except Exception as e:
@@ -61,7 +61,7 @@ async def main():
         except Exception as e:
             print(f"Error utama: {e}")
 
-        print(f"Menunggu {jeda_siklus // 60} menit untuk mulai siklus berikutnya...")
+        print(f"Menunggu {jeda_siklus // 60} menit sebelum mulai siklus berikutnya...")
         await asyncio.sleep(jeda_siklus)
 
 with client:
