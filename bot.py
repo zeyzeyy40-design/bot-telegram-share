@@ -1,14 +1,15 @@
-import asyncio
+import os
 from telethon import TelegramClient
-from telethon.tl.types import Channel, Chat
+from telethon.sessions import StringSession
 
-# --- ISI DATA AKUN TELEGRAM LU DISINI ---
-api_id = 38275473       # Ganti pakai API ID lu (ambil di my.telegram.org)
-api_hash = '1d2dbdc7a786c4c1bc6b3547c7ec3e63' # Ganti pakai API Hash lu
-pesan_kirim = 'Halo gan, mau promoin layanan / panel sosial media di sini ya!' 
-jeda_waktu = 1200     # 1200 detik = 20 menit
+api_id = 38275473 # Sesuai api_id lu
+api_hash = '1d2dbdc7a786c4c1bc6b3547c7ec3e63' # Sesuai api_hash lu
+string_session = os.environ.get('SESSION')
 
-client = TelegramClient('sesi_userbot', api_id, api_hash)
+# Pakai StringSession(string_session) supaya gak nanya input nomor HP lagi
+client = TelegramClient(StringSession(string_session), api_id, api_hash)
+
+#client = TelegramClient('sesi_userbot', api_id, api_hash)
 
 async def main():
     print("Userbot broadcast aktif...")
@@ -44,3 +45,4 @@ async def main():
 
 with client:
     client.loop.run_until_complete(main())
+
