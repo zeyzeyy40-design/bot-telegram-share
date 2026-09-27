@@ -13,7 +13,7 @@ if not string_session:
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-pesan_kirim = "Halo, ini pesan broadcast otomatis."
+pesan_kirim = "apk qris tanpa ktp & gratis fee cuma 100p loh🥶 download kebio aja."
 jeda_waktu = 1200  
 
 async def main():
