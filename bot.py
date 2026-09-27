@@ -13,8 +13,9 @@ if not string_session:
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-pesan_kirim = "DOWNLOAD APLIKASI QRIS TANPA KTP & GRATIS FEE CUMA 101P LOH, DOWNLOAD DIBIO🥳"
-jeda_waktu = 300  # Jeda 5 menit untuk siklus berikutnya
+pesan_kirim = "DOWNLOAD MILKYPEDIA APLIKASI PPOB & QRIS TANPA KTP, GASS DOWNLOAD DIBIO🥶✅"
+jeda_antar_grup = 4      # Jeda singkat 4 detik antar grup biar aman dari spam/FloodWait
+jeda_siklus = 300        # Jeda 5 menit sebelum bot mulai siklus broadcast ulang dari awal
 
 async def main():
     print("Userbot broadcast aktif...")
@@ -26,42 +27,42 @@ async def main():
             async for dialog in client.iter_dialogs():
                 if dialog.is_group or dialog.is_channel:
                     entity = dialog.entity
-                    if isinstance(entity, Chat) or (isinstance(entity, Channel) and entity.megagroup):
+                    
+                    # Cek apakah grup tertutup atau read-only (tidak bisa kirim pesan)
+                    is_closed = False
+                    try:
+                        if isinstance(entity, Channel):
+                            if entity.banned_rights and entity.banned_rights.send_messages:
+                                is_closed = True
+                        elif isinstance(entity, Chat):
+                            if entity.admin_rights and not entity.admin_rights.post_messages:
+                                is_closed = True
+                    except Exception:
+                        pass
+
+                    if is_closed:
+                        print(f"Skipped (Grup Ditutup): {dialog.name}")
+                        continue
+
+                    # Coba kirim pesan ke grup yang terbuka
+                    try:
+                        await client.send_message(dialog.id, pesan_kirim)
+                        count += 1
+                        print(f"Berhasil kirim ke: {dialog.name}")
                         
-                        # Cek apakah grup tertutup atau tidak mengizinkan mengirim pesan
-                        # (Membaca atribut admin_rights atau default_banned_rights dari entity)
-                        try:
-                            # Jika grup adalah channel/megagroup, cek hak kirim pesannya
-                            if isinstance(entity, Channel):
-                                if entity.banned_rights and entity.banned_rights.send_messages:
-                                    print(f"Skipped (Grup Ditutup/Read-only): {dialog.name}")
-                                    continue
-                            elif isinstance(entity, Chat):
-                                if entity.admin_rights and not entity.admin_rights.post_messages:
-                                    # Untuk grup biasa, pastikan tidak dibatasi
-                                    pass
-                        except Exception:
-                            pass
+                        # Jeda singkat antar grup agar tidak gampang kena batasan
+                        await asyncio.sleep(jeda_antar_grup)
+                        
+                    except Exception as e:
+                        print(f"Gagal kirim ke {dialog.name}: {e}")
 
-                        try:
-                            await client.send_message(dialog.id, pesan_kirim)
-                            count += 1
-                            print(f"Berhasil kirim ke: {dialog.name}")
-                            
-                            # Jeda 6 detik antar pesan agar aman dari batasan FloodWait Telegram
-                            await asyncio.sleep(6)
-                            
-                        except Exception as e:
-                            # Kalau tetap kena error karena grup tiba-tiba read-only/restricted
-                            print(f"Gagal kirim ke {dialog.name}: {e}")
-
-            print(f"Selesai! Pesan terkirim ke {count} grup.")
+            print(f"Selesai satu putaran! Pesan terkirim ke {count} grup.")
 
         except Exception as e:
             print(f"Error utama: {e}")
 
-        print(f"Menunggu {jeda_waktu // 60} menit untuk siklus berikutnya...")
-        await asyncio.sleep(jeda_waktu)
+        print(f"Menunggu {jeda_siklus // 60} menit untuk mulai siklus berikutnya...")
+        await asyncio.sleep(jeda_siklus)
 
 with client:
     client.loop.run_until_complete(main())
