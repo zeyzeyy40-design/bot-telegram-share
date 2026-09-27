@@ -1,13 +1,17 @@
 import os
+import asyncio
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 
-api_id = 38275473 # Sesuai api_id lu
-api_hash = '1d2dbdc7a786c4c1bc6b3547c7ec3e63' # Sesuai api_hash lu
+api_id = 38275473
+api_hash = '1d2dbdc7a786c4c1bc6b3547c7ec3e63'
 string_session = os.environ.get('SESSION')
 
-# Pakai StringSession(string_session) supaya gak nanya input nomor HP lagi
+# Inisialisasi client menggunakan StringSession dari environment variable GitHub Secrets
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
+
+pesan_kirim = "Halo, ini pesan otomatis userbot!"
+jeda_waktu = 10 # dalam menit
 
 async def main():
     print("Userbot broadcast aktif...")
@@ -15,32 +19,24 @@ async def main():
         try:
             print("Memindai semua grup yang di-join...")
             count = 0
-            
-            # Loop untuk mendeteksi semua dialog/chat yang ada di akun
             async for dialog in client.iter_dialogs():
-                # Cek apakah itu grup atau supergrup (channel biasa diskip biar gak error)
                 if dialog.is_group or dialog.is_channel:
                     entity = dialog.entity
-                    # Pastikan kita punya izin kirim pesan (bukan channel broadcast satu arah)
-                    if isinstance(entity, Chat) or (isinstance(entity, Channel) and entity.megagroup):
+                    if getattr(entity, 'megagroup', False) or dialog.is_channel:
                         try:
                             await client.send_message(dialog.id, pesan_kirim)
                             count += 1
                             print(f"Berhasil kirim ke: {dialog.name}")
-                            # Jeda 3 detik antar grup supaya gak kena banned (FloodWait)
                             await asyncio.sleep(3)
                         except Exception as e:
                             print(f"Gagal kirim ke {dialog.name}: {e}")
-                            
-            print(f"Selesai! Pesan terkirim ke {count} grup.")
             
+            print(f"Selesai! Pesan terkirim ke {count} grup.")
         except Exception as e:
             print(f"Error utama: {e}")
         
-        # Tunggu selama 20 menit sebelum siklus kirim berikutnya
-        print(f"Menunggu {jeda_waktu // 60} menit untuk siklus berikutnya...")
-        await asyncio.sleep(jeda_waktu)
+        print(f"Menunggu {jeda_waktu} menit untuk siklus berikutnya...")
+        await asyncio.sleep(jeda_waktu * 60)
 
 with client:
     client.loop.run_until_complete(main())
-
