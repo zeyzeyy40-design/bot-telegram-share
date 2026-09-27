@@ -3,6 +3,7 @@ import asyncio
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import Chat, Channel
+from telethon.errors import FloodWaitError
 
 api_id = 38275473
 api_hash = "1d2dbdc7a786c4c1bc6b3547c7cc3e63"
@@ -13,12 +14,11 @@ if not string_session:
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-pesan_kirim = "DOWNLOAD MILKYPEDIA, APK PPOB & QRIS TANPA KTP GRATISS🥳"
-jeda_antar_grup = 15     # Jeda 15 detik antar grup biar aman dari FloodWait JB
-jeda_siklus = 900        # Jeda 15 menit (900 detik) setelah selesai satu putaran penuh
+pesan_kirim = "apk ppob & qris tanpa ktp gratis tinggal login, baca namaku"
+jeda_antar_grup = 25     # Jeda agak panjang (25 detik) supaya lebih aman dari pancingan spam
 
 async def main():
-    print("Userbot broadcast aktif...")
+    print("Userbot broadcast anti-gagal aktif...")
     while True:
         try:
             print("Memindai semua grup yang di-join...")
@@ -44,25 +44,35 @@ async def main():
                         print(f"Skipped (Grup Ditutup): {dialog.name}")
                         continue
 
-                    # Coba kirim pesan ke grup yang terbuka
-                    try:
-                        await client.send_message(dialog.id, pesan_kirim)
-                        count += 1
-                        print(f"Berhasil kirim ke: {dialog.name}")
-                        
-                        # Jeda aman antar grup
-                        await asyncio.sleep(jeda_antar_grup)
-                        
-                    except Exception as e:
-                        print(f"Gagal kirim ke {dialog.name}: {e}")
+                    # Sistem Kirim dengan Proteksi Anti-FloodWait (Otomatis Nunggu & Coba Lagi)
+                    berhasil = False
+                    while not berhasil:
+                        try:
+                            await client.send_message(dialog.id, pesan_kirim)
+                            count += 1
+                            print(f"Berhasil kirim ke: {dialog.name}")
+                            berhasil = True
+                            
+                            # Jeda antar grup yang terbuka
+                            await asyncio.sleep(jeda_antar_grup)
+                            
+                        except FloodWaitError as e:
+                            # Jika kena batasan Telegram, bot otomatis diam menunggu sampai waktu hukuman selesai, lalu lanjut lagi!
+                            menunggu = e.seconds + 5
+                            print(f"Kena FloodWait di {dialog.name}. Menunggu otomatis selama {menunggu} detik...")
+                            await asyncio.sleep(menunggu)
+                        except Exception as e:
+                            print(f"Gagal kirim ke {dialog.name} karena kendala lain: {e}")
+                            break # Lewati grup ini jika error-nya bukan karena FloodWait (misal akun di-kick/dibanned dari grup)
 
-            print(f"Selesai satu putaran! Pesan terkirim ke {count} grup.")
+            print(f"Selesai satu putaran penuh! Pesan berhasil disebar ke {count} grup.")
 
         except Exception as e:
-            print(f"Error utama: {e}")
+            print(f"Error utama siklus: {e}")
 
-        print(f"Menunggu {jeda_siklus // 60} menit sebelum mulai siklus berikutnya...")
-        await asyncio.sleep(jeda_siklus)
+        # Jeda antar siklus besar (misal 15 menit sebelum mutar ulang dari grup pertama)
+        print("Menunggu 15 menit sebelum mulai siklus berikutnya...")
+        await asyncio.sleep(900)
 
 with client:
     client.loop.run_until_complete(main())
