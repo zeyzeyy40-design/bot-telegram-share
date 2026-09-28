@@ -6,7 +6,7 @@ from telethon.tl.types import Chat, Channel
 from telethon.errors import FloodWaitError
 
 api_id = 38275473
-api_hash = "1d2dbdc7a786c4c1bc6b3547c7cc3e63"
+api_hash = "1d2dbdc7a786c41bc6b3547c7cc3e63"
 string_session = os.environ.get('SESSION')
 
 if not string_session:
@@ -15,7 +15,7 @@ if not string_session:
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
 pesan_kirim = "apk ppob & qris tanpa ktp gratis tinggal login, baca namaku"
-jeda_antar_grup = 25     # Jeda agak panjang (25 detik) supaya lebih aman dari pancingan spam
+jeda_antar_grup = 25  # Jeda agak panjang (25 detik) supaya lebih aman dari pancingan spam
 
 async def main():
     print("Userbot broadcast anti-gagal aktif...")
@@ -27,7 +27,7 @@ async def main():
             async for dialog in client.iter_dialogs():
                 if dialog.is_group or dialog.is_channel:
                     entity = dialog.entity
-                    
+
                     # Cek apakah grup tertutup atau read-only (tidak bisa kirim pesan)
                     is_closed = False
                     try:
@@ -52,18 +52,18 @@ async def main():
                             count += 1
                             print(f"Berhasil kirim ke: {dialog.name}")
                             berhasil = True
-                            
+
                             # Jeda antar grup yang terbuka
                             await asyncio.sleep(jeda_antar_grup)
-                            
+
                         except FloodWaitError as e:
-                            # Jika kena batasan Telegram, bot otomatis diam menunggu sampai waktu hukuman selesai, lalu lanjut lagi!
+                            # Jika kena batasan Telegram, bot otomatis diam menunggu sampai waktu hukuman selesai, lalu lanjut
                             menunggu = e.seconds + 5
                             print(f"Kena FloodWait di {dialog.name}. Menunggu otomatis selama {menunggu} detik...")
                             await asyncio.sleep(menunggu)
                         except Exception as e:
                             print(f"Gagal kirim ke {dialog.name} karena kendala lain: {e}")
-                            break # Lewati grup ini jika error-nya bukan karena FloodWait (misal akun di-kick/dibanned dari grup)
+                            break  # Lewati grup ini jika error-nya bukan karena FloodWait (misal akun di-kick/banned)
 
             print(f"Selesai satu putaran penuh! Pesan berhasil disebar ke {count} grup.")
 
