@@ -25,5 +25,6 @@ jobs:
 
     - name: Run Bot
       env:
-        SESSION: ${{ secrets.SESSION }}  # Menghubungkan GitHub Secret ke skrip Python
+        SESSION: ${{ secrets.SESSION }}  # <-- INI YANG WAJIB ADA
       run: python bot.py
+
