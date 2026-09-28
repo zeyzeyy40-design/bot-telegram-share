@@ -7,7 +7,7 @@ from telethon.errors import FloodWaitError
 
 api_id = 38275473
 api_hash = "1d2dbdc7a786c41bc6b3547c7cc3e63"
-string_session = os.environ.get('SESSION')
+string_session = os.environ.get('SESSION_STRING')
 
 if not string_session:
     raise ValueError("ERROR: Variabel lingkungan SESSION tidak ditemukan! Pastikan secret GitHub sudah diset.")
