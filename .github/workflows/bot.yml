@@ -3,7 +3,7 @@ name: Run Telegram Bot
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Memungkinkan tombol 'Run workflow' manual di tab Actions
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,6 +25,5 @@ jobs:
 
     - name: Run Bot
       env:
-        SESSION: ${{ secrets.SESSION }}  # <-- INI YANG WAJIB ADA
+        SESSION: ${{ secrets.SESSION }}
       run: python bot.py
-
