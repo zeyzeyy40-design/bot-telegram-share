@@ -25,5 +25,5 @@ jobs:
 
     - name: Run Bot
       env:
-        SESSION: ${{ secrets.SESSION }}
+        SESSION_STRING: ${{ secrets.SESSION_STRING }}
       run: python bot.py
