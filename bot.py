@@ -6,20 +6,20 @@ from telethon.tl.types import Chat, Channel
 from telethon.errors import FloodWaitError
 
 api_id = 38275473
-api_hash = "1d2dbdc7a786c41bc6b3547c7cc3e63"
-string_session = os.environ.get('SESSION_STRING')
+api_hash = "1d2dbde7a786c41beb3547c7cc3ee63"
+string_session = os.getenv('SESSION_STRING')
 
 if not string_session:
     raise ValueError("ERROR: Variabel lingkungan SESSION_STRING tidak ditemukan!")
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
-pesan_kirim = "apk ppob & qris tanpa ktp gratis tinggal login, baca namaku"
+pesan_irim = "apk ppob & qris tanpa ktp gratis tinggal login, baca nama"
 jeda_antar_grup = 25
 
 async def main():
     print("Memulai putaran broadcast...")
     count = 0
-
+    
     async for dialog in client.iter_dialogs():
         if dialog.is_group or dialog.is_channel:
             entity = dialog.entity
@@ -27,21 +27,21 @@ async def main():
             # Cek grup tertutup/read-only
             is_closed = False
             try:
-                if isinstance(entity, Channel) and entity.banned_rights and entity.banned_rights.send_messages:
+                if isinstance(entity, Channel) and entity.banned_rights:
                     is_closed = True
-                elif isinstance(entity, Chat) and entity.admin_rights and not entity.admin_rights.post_messages:
+                elif isinstance(entity, Chat) and entity.admin_rights:
                     is_closed = True
             except Exception:
                 pass
-
+                
             if is_closed:
                 continue
-
+                
             # Kirim pesan dengan proteksi FloodWait
             berhasil = False
             while not berhasil:
                 try:
-                    await client.send_message(dialog.id, pesan_kirim)
+                    await client.send_message(dialog.id, pesan_irim)
                     count += 1
                     print(f"Berhasil kirim ke: {dialog.name}")
                     berhasil = True
@@ -50,10 +50,11 @@ async def main():
                     menunggu = e.seconds + 5
                     print(f"Kena FloodWait, menunggu {menunggu} detik...")
                     await asyncio.sleep(menunggu)
-                except Exception:
+                except Exception as ex:
+                    print(f"Gagal kirim ke {dialog.name}: {ex}")
                     break
-
-    print(f"Selesai! Pesan disebar ke {count} grup. Bot dimatikan dengan aman.")
+                    
+    print(f"Selesai: Pesan disebar ke {count} grup. Bot dimatikan.")
 
 with client:
     client.loop.run_until_complete(main())
