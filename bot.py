@@ -13,7 +13,7 @@ if not string_session:
     raise ValueError("ERROR: Variabel lingkungan SESSION_STRING tidak diatur.")
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
-pesan_irim = "gasss web suntik all sosmed lu nih wkwk : https://suntikallsosmedd.vercel.app/"
+pesan_irim = "apk qr tanpa ktp fee cuma 100p langsung baca nama gw aja lek!! ( ini pesan otomatis )"
 jeda_antar_grup = 35 # Disesuaikan sedikit jadi 35 detik biar gak gampang flood
 
 async def main():
